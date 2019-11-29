@@ -92,7 +92,6 @@ int main_prg(int argc, char **argv) {
   }
 
   for (int i = 0; i < n; i++) {
-    printf("bm_search index: %d\n", i);
     char * match = bm_search(t, (int)strlen(t), s[i], (int)strlen(s[i]));
     if (match == NULL) {
       continue;
