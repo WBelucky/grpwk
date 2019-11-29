@@ -1,2 +1,7 @@
 # grpwk
-For group work of  Algorithm B
+
+# これは何
+情理B2 アルゴリズムとデータ構造Bのグループワーク用レポジトリです
+
+# 実行方法
+ここに実行方法を書く
