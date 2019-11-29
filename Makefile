@@ -1,6 +1,6 @@
-PROG = grpwk
-OBJS = template.o
-CC = gcc
+PROG = grpwk # 出力する実行ファイル名
+OBJS = main.o # 多分使用するファイル名
+CC = gcc # 使うコンパイラ
 CFLAGS = -W -Wall -Wextra -Wconversion -Wshadow
 LDFLAGS = 
 
