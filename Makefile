@@ -4,22 +4,19 @@ PROG = grpwk
 # ソースファイルがあるディレクトリ
 SRCDIR = ./src
 
-# SRCDIRディレクトリ以下にあるファイル名を書く
-SRC = main.c
-
 # *.oファイルが生成される場所
 DIST = ./obj
 
-OBJS =  $(SRC:%.c=%.o)
+# ここにsrc以下にあるファイル名を列挙する
+SRC =  main.c bm.c
 CC = gcc # 使うコンパイラ
 
-# TODO: リリース時にはO2オプションをつけたい
-CFLAGS = -W -Wall -Wextra -Wconversion -Wshadow
-LDFLAGS = 
+CFLAGS = -O2 -W -Wall -Wextra -Wconversion -Wshadow
+LDFLAGS =
 
 .SUFFIXES: .c
 
-$(PROG): $(DIST)/$(OBJS)
+$(PROG): $(SRC:%.c=$(DIST)/%.o)
 	$(CC) $(LDFLAGS) -o $(PROG) $^
 # $< は
 $(DIST)/%.o: $(SRCDIR)/%.c
