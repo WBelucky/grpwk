@@ -8,11 +8,12 @@ SRCDIR = ./src
 DIST = ./obj
 
 # ここにsrc以下にあるファイル名を列挙する
-SRC =  main.c bm.c
+SRC =  main.c solve.c bm.c
 CC = gcc # 使うコンパイラ
 
+# コンパイルオプション
 CFLAGS = -O2 -W -Wall -Wextra -Wconversion -Wshadow
-LDFLAGS =
+LDFLAGS = -O2
 
 .SUFFIXES: .c
 
@@ -29,5 +30,5 @@ test:	$(PROG)
 	gcc -o ./bin/perform_test tools/perform_test.c
 	for i in 0 1 2 3 4; do\
 	    ./$(PROG) "data/dat$${i}_in" out.txt;\
-	    ./bin/perform_test out.txt "data/dat$${i}_ref";\
+	    ./bin/perform_test "data/dat$${i}_in" out.txt "data/dat$${i}_ref";\
 	done

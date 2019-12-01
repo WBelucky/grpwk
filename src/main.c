@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/time.h>
-#include <string.h>
-#include "bm.h"
+#include "solve.h"
+
 // 虫食い文字列Tの最大の長さ
 #define T_MAX 1000000
 
@@ -26,10 +26,8 @@ int main(int argc, char **argv) {
   fprintf(stderr, "%lf\n",
           (double)(end.tv_sec - start.tv_sec) +
               (double)(end.tv_usec - start.tv_usec) * 1e-6);
-
   return (0);
 }
-
 
 int main_prg(int argc, char **argv) {
   if (argc != 3) {
@@ -62,28 +60,17 @@ int main_prg(int argc, char **argv) {
     }
   }
 
-  for (int i = 0; i < n; i++) {
-    char * match = bm_search(t, (int)strlen(t), s[i], (int)strlen(s[i]));
-    if (match == NULL) {
-      continue;
-    }
-    for (int j = 0; j < (int)strlen(s[i]); j++) {
-      match[j] = s[i][j];
-    }
-  }
-
+  // 出力ファイルを作る
   FILE *fp_out = fopen(argv[2], "w");
   if (fp_out == NULL) {
     printf("error: could not open %s\n", argv[2]);
     exit(1);
   }
 
-  // とりあえず入力データをそのまま出力している.
+  // 解く
+  solve(t, s, n);
+
+  // 出力
   fprintf(fp_out, "%s\n", t);
-  /** implement here
-   *
-   * read input values from fp_in
-   * write output values to fp_out
-   **/
   return 0;
 }

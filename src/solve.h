@@ -1,0 +1,1 @@
+void solve(char* t, char** s, int n);
