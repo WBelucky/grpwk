@@ -72,5 +72,14 @@ int main_prg(int argc, char **argv) {
 
   // 出力
   fprintf(fp_out, "%s\n", t);
+
+  // 一応ファイルとか閉じといてみた
+  fclose(fp_out);
+  fclose(fp_in);
+  free(t);
+  for (int i = 0; i < n; i ++) {
+    free(s[i]);
+  }
+  free(s);
   return 0;
 }
