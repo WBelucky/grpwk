@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include "solve.h"
+
+// 虫食い文字列Tの最大の長さ
+#define T_MAX 1000000
 
 int main_prg(int, char **);
 
@@ -22,7 +26,6 @@ int main(int argc, char **argv) {
   fprintf(stderr, "%lf\n",
           (double)(end.tv_sec - start.tv_sec) +
               (double)(end.tv_usec - start.tv_usec) * 1e-6);
-
   return (0);
 }
 
@@ -36,17 +39,38 @@ int main_prg(int argc, char **argv) {
     printf("error: could not open %s\n", argv[1]);
     exit(1);
   }
+
+  // 虫食い文字tの入力
+  char* t = (char *)malloc(sizeof(char) * T_MAX);
+  fscanf(fp_in, "%s", t);
+
+  // 部分文字列s[i]の入力
+  char** s = (char**)malloc(sizeof(char*) * T_MAX);
+  int n = 0;
+  for (; n < T_MAX; n++) {
+    s[n] = (char*)malloc(sizeof(char) * T_MAX);
+
+    // debug
+    if (s[n] == NULL) {
+      printf("could not allocate");
+      exit(1);
+    }
+    if (fscanf(fp_in, "%s", s[n]) == EOF) {
+      break;
+    }
+  }
+
+  // 出力ファイルを作る
   FILE *fp_out = fopen(argv[2], "w");
   if (fp_out == NULL) {
     printf("error: could not open %s\n", argv[2]);
     exit(1);
   }
 
-  /** implement here
-   *
-   * read input values from fp_in
-   * write output values to fp_out
-   **/
+  // 解く
+  solve(t, s, n);
 
+  // 出力
+  fprintf(fp_out, "%s\n", t);
   return 0;
 }

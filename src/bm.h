@@ -1,0 +1,1 @@
+char* bm_search(char * t, int t_length, char* s, int s_length);
