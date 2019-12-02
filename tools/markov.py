@@ -9,7 +9,7 @@ for i in range(5):
         prev = ""
         for s in it:
             try:
-                tmp = s #+ next(it)
+                tmp = s # + next(it)
             except StopIteration:
                 break
             if prev not in m:
@@ -18,4 +18,11 @@ for i in range(5):
                 m[prev][tmp] = 0
             m[prev][tmp] += 1
             prev = tmp
-        print(m)
+        for prev, v in m.items():
+            print(prev)
+            sum = 0
+            for cnt in v.values():
+                sum += cnt
+            for nxt, cnt in v.items():
+                print("\t{}: {}%".format(nxt, cnt / sum * 100))
+            
