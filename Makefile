@@ -9,7 +9,9 @@ DIST = ./obj
 
 # ここにsrc以下にあるファイル名を列挙する
 SRC =  main.c solve.c bm.c
-CC = gcc # 使うコンパイラ
+
+# 使うコンパイラ
+CC = gcc
 
 # コンパイルオプション
 CFLAGS = -O2 -W -Wall -Wextra -Wconversion -Wshadow
@@ -32,3 +34,8 @@ test:	$(PROG)
 	    ./$(PROG) "data/dat$${i}_in" out.txt;\
 	    ./bin/perform_test "data/dat$${i}_in" out.txt "data/dat$${i}_ref";\
 	done
+
+unit_test:
+	mkdir -p .bin
+	gcc -o ./bin/bm_test src/bm_test.c src/bm.c
+	./bin/bm_test
