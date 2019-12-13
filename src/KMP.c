@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 void GetNext(char* p, int next[])
 {
@@ -32,7 +34,7 @@ int KmpSearch(char* s, char* p)
     int j = 0;
     int sLen = strlen(s);
     int pLen = strlen(p);
-    int x_index = -1;
+    int index = 0;
     int first_x = 1;
     
     while (i < sLen && j < pLen)
@@ -41,20 +43,21 @@ int KmpSearch(char* s, char* p)
         {
             i++;
             j++;
-            if(!first_x && x_index == -1 && s[i] == 'x'){
-                x_index = i;
+            if(first_x && s[i] == 'x'){
+                index = i-j;
+		first_x = 0;
             }
-            first_x = 0;
+         
         }
         else
         {
-            if(x_index == -1)
+            if(first_x)
                 j = next[j];
             else{
-                i = x_index;
+                i = index+1;
                 j = 0;
                 first_x = 1;
-                x_index = -1;
+                index = -1;
             }
         }
     }
