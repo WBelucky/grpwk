@@ -9,6 +9,32 @@ int str_len_cmp_r(const void * a, const void * b) {
     return (int)strlen(*(char**)b) - (int)strlen(*(char**)a);
 }
 
+double after[4][4] = {
+0.4,0.2,0.2,0.2,
+0.4,0.2,0.1,0.3,
+0.3,0.3,0.1,0.3,
+0.5,0.4,0,0.1
+};
+
+
+double markov(char * t,int i, int j){
+	double ret = 0;
+	if(i){
+	    int a = t[i-1] - 'a';
+	    ret += after[a][j]; 
+	}
+	if(t[i+1]){
+	    int a = t[i+1] - 'a';
+	    ret += after[j][a];
+	}
+	return ret;
+}
+
+
+
+
+
+
 void solve(char * t, char** s, int n) {
 
   // // 文字列の長さでソートしたらチョット(2%程度)精度が上がった
@@ -19,7 +45,7 @@ void solve(char * t, char** s, int n) {
     strcpy(tt,t);
     
     
-    for(int i = 0 ; i < n; i++){
+    for(int i = 0 ; i < 6000; i++){
         int index = KmpSearch(t,s[i]);
         int s_len = strlen(s[i]);
         if(index != -1){
@@ -49,7 +75,18 @@ void solve(char * t, char** s, int n) {
   // xが残っていたら取り合えずaに置き換え
   for (int i = 0; i < t_length; i ++) {
    	 if (t[i] == 'x') {
-      		t[i] = 'a';
+		int index = 0;
+		double maxp = 0;
+      		for(int j = 0; j < 4;j++){
+			double p = markov(t,i,j);
+			if(p > maxp){
+				maxp = p;
+				index = j;
+			}
+		}
+		t[i] = 'a' + index;
     	}
   }
+  
+
 }
