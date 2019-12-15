@@ -46,8 +46,8 @@ void solve(char * t, char** s, int n) {
     
     
     for(int i = 0 ; i < 6000; i++){
-        int index = KmpSearch(t,s[i]);
         int s_len = strlen(s[i]);
+        int index = KmpSearch(t, t_length, s[i], s_len);
         if(index != -1){
             for(int j = 0;j < s_len;j++){
                 t[index+j] = s[i][j];
@@ -73,20 +73,18 @@ void solve(char * t, char** s, int n) {
 //   }
 
   // xが残っていたら取り合えずaに置き換え
-  for (int i = 0; i < t_length; i ++) {
-   	 if (t[i] == 'x') {
-		int index = 0;
-		double maxp = 0;
-      		for(int j = 0; j < 4;j++){
-			double p = markov(t,i,j);
-			if(p > maxp){
-				maxp = p;
-				index = j;
-			}
-		}
-		t[i] = 'a' + index;
-    	}
-  }
-  
-
+    for(int i = 0; i < t_length; i++) {
+      if(t[i] == 'x') {
+        int index = 0;
+        double maxp = 0;
+        for(int j = 0; j < 4; j++) {
+          double p = markov(t, i, j);
+          if(p > maxp) {
+            maxp = p;
+            index = j;
+          }
+        }
+        t[i] = 'a' + index;
+      }
+    }
 }

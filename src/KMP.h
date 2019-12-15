@@ -1,1 +1,1 @@
-int KmpSearch(char* s, char* p);
+int KmpSearch(char* s, int sLen, char* p, int pLen);

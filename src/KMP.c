@@ -26,14 +26,12 @@ void GetNext(char* p, int next[])
     
 }
 
-int KmpSearch(char* s, char* p)
+int KmpSearch(char* s, int sLen, char* p, int pLen)
 {
     int next[300];
     GetNext(p,next);
     int i = 0;
     int j = 0;
-    int sLen = strlen(s);
-    int pLen = strlen(p);
     int index = 0;
     int first_x = 1;
     
