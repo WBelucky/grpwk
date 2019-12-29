@@ -34,31 +34,30 @@ void solve(char *t, char **s, int n, Params* params) {
   char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
   strcpy(tt, t);
 
-  for(int i = 0; i < params->bm_search_limit_length; i++) {
-    int s_len = (int)strlen(s[i]);
-    int index = KmpSearch(t, t_length, s[i], s_len);
-    if(index != -1) {
-      for(int j = 0; j < s_len; j++) {
-        t[index + j] = s[i][j];
-      }
-
-      for(int j = 0; j < s_len; j++) {
-        tt[index + j] = 'z';
-      }
-    }
-  }
-
-  // // s[i]をそれぞれ見ていって, tのある部分とマッチしたらそこを書き換え.
-  //   for (int i = 0; i < params->bm_search_limit_length; i++) {
-  //     int s_length = (int)strlen(s[i]);
-  //     char * match = bm_search(t, t_length, s[i], s_length);
-  //     if (match == NULL) {
-  //       continue;
-  //     }
-  //     for (int j = 0; j < s_length; j++) {
-  //       match[j] = s[i][j];
+  // for(int i = 0; i < params->bm_search_limit_length; i++) {
+  //   int s_len = (int)strlen(s[i]);
+  //   int index = KmpSearch(tt, t_length, s[i], s_len);
+  //   if(index != -1) {
+  //     for(int j = 0; j < s_len; j++) {
+  //       t[index + j] = s[i][j];
+  //       tt[index + j] = 'z';
   //     }
   //   }
+  // }
+
+  // s[i]をそれぞれ見ていって, tのある部分とマッチしたらそこを書き換え.
+  for (int i = 0; i < params->bm_search_limit_length; i++) {
+    int s_length = (int)strlen(s[i]);
+    char * match = bm_search(tt, t_length, s[i], s_length);
+    if (match == NULL) {
+      continue;
+    }
+    int index = (int)(match - tt);
+    for(int j = 0; j < s_length; j++) {
+      t[j + index] = s[i][j];
+      tt[j + index] = 'z';
+    }
+  }
 
   // xが残っていたら取り合えずaに置き換え
   for(int i = 0; i < t_length; i++) {

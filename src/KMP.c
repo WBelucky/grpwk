@@ -1,9 +1,9 @@
-#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 void GetNext(char* p, int next[])
 {
-    int pLen = strlen(p);
+    int pLen = (int)strlen(p);
     next[0] = -1;
     int k = -1;
     int j = 0;

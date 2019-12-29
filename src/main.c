@@ -76,7 +76,7 @@ int main_prg(int argc, char **argv) {
   Params p;
   // 何も指定しない時(本番)
   if (argc == 3) {
-    p.bm_search_limit_length = n;
+    p.bm_search_limit_length = 9000;
   } else {
     p.bm_search_limit_length = atoi(argv[3]);
   }

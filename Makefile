@@ -8,7 +8,7 @@ SRCDIR = ./src
 DIST = ./obj
 
 # ここにsrc以下にあるファイル名を列挙する
-SRC =  main.c solve.c KMP.c
+SRC =  main.c solve.c KMP.c bm.c
 
 # 使うコンパイラ
 CC = gcc
