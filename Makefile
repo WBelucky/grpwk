@@ -36,6 +36,12 @@ test:	$(PROG)
 	done
 
 unit_test:
-	mkdir -p .bin
+	mkdir -p ./bin
 	gcc -o ./bin/bm_test src/bm_test.c src/bm.c
 	./bin/bm_test
+13.tar: grpwk
+	mkdir -p ./13
+	cp -r src ./13
+	cp Makefile ./13
+	cp README_FOR_SUBMIT.md ./13
+	tar -cvf 13.tar ./13

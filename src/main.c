@@ -4,9 +4,11 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include "solve.h"
+#include "params.h"
 
 // 虫食い文字列Tの最大の長さ
 #define T_MAX 1000000
+
 
 int main_prg(int, char **);
 
@@ -30,8 +32,8 @@ int main(int argc, char **argv) {
 }
 
 int main_prg(int argc, char **argv) {
-  if (argc != 3) {
-    printf("usage: grpwk <input file> <output file>\n");
+  if (argc < 3) {
+    printf("usage: grpwk <input file> <output file> (<params...>)\n");
     exit(1);
   }
   FILE *fp_in = fopen(argv[1], "r");
@@ -42,7 +44,10 @@ int main_prg(int argc, char **argv) {
 
   // 虫食い文字tの入力
   char* t = (char *)malloc(sizeof(char) * T_MAX);
-  fscanf(fp_in, "%s", t);
+  if (fscanf(fp_in, "%s", t) == EOF) {
+    printf("could not read T");
+    exit(1);
+  }
 
   // 部分文字列s[i]の入力
   char** s = (char**)malloc(sizeof(char*) * T_MAX);
@@ -67,8 +72,17 @@ int main_prg(int argc, char **argv) {
     exit(1);
   }
 
+  // 解析用のパラメータを適用する
+  Params p;
+  // 何も指定しない時(本番)
+  if (argc == 3) {
+    p.bm_search_limit_length = n;
+  } else {
+    p.bm_search_limit_length = atoi(argv[3]);
+  }
+
   // 解く
-  solve(t, s, n);
+  solve(t, s, n, &p);
 
   // 出力
   fprintf(fp_out, "%s\n", t);
