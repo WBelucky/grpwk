@@ -10,8 +10,6 @@ int str_len_cmp_r(const void * a, const void * b) {
 }
 
 void solve(char * t, char** s, int n, Params* p) {
-  printf("params = %d\n", p->bm_search_limit_length);
-
   // 文字列の長さでソートしたら精度が上がる
   qsort(s, (size_t)n , sizeof(char*), str_len_cmp_r);
 
