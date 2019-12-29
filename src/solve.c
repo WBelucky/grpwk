@@ -27,7 +27,7 @@ double markov(char *t, int i, int j) {
 }
 
 void solve(char *t, char **s, int n, Params* params) {
-  // // 文字列の長さでソートしたらチョット(2%程度)精度が上がった
+  // これには0.01秒程度しかかからないので, ここのソートの高速化は後回しでいい
   qsort(s, (size_t)n, sizeof(char *), str_len_cmp_r);
 
   int t_length = (int)strlen(t);
@@ -46,6 +46,7 @@ void solve(char *t, char **s, int n, Params* params) {
   // }
 
   // s[i]をそれぞれ見ていって, tのある部分とマッチしたらそこを書き換え.
+  // ttにはどこが埋まっているかを記録するために, 文字列で埋めたところに'z'を入れる. こうすれば, すでにマッチした部分に再びマッチすることはない.
   for (int i = 0; i < params->bm_search_limit_length; i++) {
     int s_length = (int)strlen(s[i]);
     char * match = bm_search(tt, t_length, s[i], s_length);
