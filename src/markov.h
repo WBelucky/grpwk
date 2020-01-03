@@ -1,0 +1,1 @@
+void markov(char* t, const int t_len);
