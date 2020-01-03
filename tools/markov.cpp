@@ -10,6 +10,7 @@ using namespace std;
  * 出力ファイルフォーマット
  * 
  * 4         // 一つあたりのパターンの長さ
+ * 60         // 以降に続くパターン対応の数
  * aaax aaaa // 左のパターンが現れたら右のパターンに変換する.
  * aabx aabd
  * ~~~
@@ -128,10 +129,9 @@ signed main(signed argc, char* argv[]) {
         len = atoi(argv[1]);
     }
     bool exclude_filled_a_all = (argc >= 3 && string(argv[2]) == "1");
-    cout << argv[2] << endl;
-    if (argc)
     cout << len << endl;
     auto m = getResult(t, len);
+    vector<pair<string, string>> v;
     for (auto& s: enumerate_including_x(len)) {
         string t = s;
         string ret = dfs(t, m, len, 0);
@@ -142,8 +142,13 @@ signed main(signed argc, char* argv[]) {
         }
         
         if (!exclude_filled_a_all || !filled_with_a_all(s, ret, len)) {
-            cout << s << " " << ret << endl;
+            v.push_back({s, ret});
         }
     }
+    cout << v.size() << endl;
+    for (auto& p: v) {
+        cout << p.first << " " << p.second << endl;
+    }
+
     return 0;
 }
