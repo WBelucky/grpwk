@@ -2,5 +2,5 @@
 #include <stdio.h>
 
 int main (void) {
-    markov("a", 1);
+    super_markov("a", 1);
 }

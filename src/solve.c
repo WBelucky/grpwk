@@ -3,6 +3,7 @@
 #include "params.h"
 #include "bm.h"
 #include "KMP.h"
+#include "markov.h"
 // qsortのための比較関数
 int str_len_cmp_r(const void * a, const void * b) {
     return (int)strlen(*(char**)b) - (int)strlen(*(char**)a);
@@ -51,6 +52,7 @@ void solve(char *t, char **s, int n, Params* params) {
     int s_length = (int)strlen(s[i]);
     char * match = bm_search(tt, t_length, s[i], s_length);
     if (match == NULL) {
+      printf("no match");
       continue;
     }
     int index = (int)(match - tt);
@@ -61,18 +63,19 @@ void solve(char *t, char **s, int n, Params* params) {
   }
 
   // xが残っていたら取り合えずaに置き換え
-  for(int i = 0; i < t_length; i++) {
-    if(t[i] == 'x') {
-      int index = 0;
-      double maxp = 0;
-      for(int j = 0; j < 4; j++) {
-        double p = markov(t, i, j);
-        if(p > maxp) {
-          maxp = p;
-          index = j;
-        }
-      }
-      t[i] = (char)('a' + index);
-    }
-  }
+  // for(int i = 0; i < t_length; i++) {
+  //   if(t[i] == 'x') {
+  //     int index = 0;
+  //     double maxp = 0;
+  //     for(int j = 0; j < 4; j++) {
+  //       double p = markov(t, i, j);
+  //       if(p > maxp) {
+  //         maxp = p;
+  //         index = j;
+  //       }
+  //     }
+  //     t[i] = (char)('a' + index);
+  //   }
+  // }
+  super_markov(t, t_length);
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // abcd => 0123, x => 4とした5進数に変換する
 // mapを実装するのがめんどくさいので必要だった.
@@ -17,7 +18,7 @@ int to_radix5_index(char * s, int s_len) {
     return index;
 }
 
-void markov(char* t, const int t_len) {
+void super_markov(char* t, const int t_len) {
     char filename[] = "./src/markov.txt";
     FILE * fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -31,10 +32,10 @@ void markov(char* t, const int t_len) {
     for (int i = 0; i < len; i++) {
         p *= 5;
     }
-    printf("%d\n", len);
     char** pattern = (char**)malloc(sizeof(char*) * p);
     for (int i = 0; i < p; i++) {
         pattern[i] = (char*)malloc(sizeof(char) * len + 1);
+        pattern[i][0] = '\0';
     }
     
     for (int i = 0; i < num_of_pattern; i++) {
@@ -42,7 +43,34 @@ void markov(char* t, const int t_len) {
         fscanf(fp, "%s", key);
         int index = to_radix5_index(key, len);
         fscanf(fp, "%s", pattern[index]);
-        printf("%d: %s\n", index, pattern[index]);
+        // printf("%d: %s\n", index, pattern[index]);
     }
     fclose(fp);
+    // for (int i = 0; i < t_len - len; i++) {
+    //     int index = to_radix5_index(t + i, len);
+    //     if (strcmp(pattern[index], "\0") == 0) {
+    //         int j = len / 2;
+    //         if (t[i + j] == 'x') {
+    //             t[i + j] = 'a';
+    //         }
+    //     } else {
+    //         int j = len / 2;
+    //         t[i + j] = pattern[index][j];
+    //     }
+    // }
+    for (int i = 0; i < t_len / len; i++) {
+        int index = to_radix5_index(t + (i * len), len);
+        if (strcmp(pattern[index], "\0") == 0) {
+            for (int j = 0; j < len; j++) {
+                if (t[i * len + j] == 'x') {
+                    t[i * len + j] = 'a';
+                }
+            }
+        } else {
+            for (int j = 0; j < len; j++) {
+                t[i * len + j] = pattern[index][j];
+            }
+        }
+
+    }
 }

@@ -23,18 +23,28 @@ int main(int argc, char* argv[]) {
 
     FILE * fp_out = fopen(argv[2], "r");
     if (fp_out == NULL) {
-        printf("could not open %s\n", argv[1]);
+        printf("could not open %s\n", argv[2]);
         exit(1);
     }
     FILE * fp_ans = fopen(argv[3], "r");
     if (fp_ans == NULL) {
-        printf("could not open %s\n", "r");
+        printf("could not open %s\n", argv[3]);
         exit(1);
     }
+
+    FILE * fp_log = fopen("log.txt", "w");
+    if (fp_log == NULL) {
+        printf("could not open %s\n", "log.txt");
+        exit(1);
+    }
+
 
     fscanf(fp_in, "%s", in);
     fscanf(fp_out, "%s", out);
     fscanf(fp_ans, "%s", ans);
+    fprintf(fp_log, "%s\n", in);
+    fprintf(fp_log, "%s\n", out);
+    fprintf(fp_log, "%s\n", ans);
     int in_len = strlen(in);
     int out_len = strlen(out);
     int ans_len = strlen(ans);
