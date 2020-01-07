@@ -79,7 +79,7 @@ int main_prg(int argc, char **argv) {
   // 何も指定しない時(本番) これが一番うまく行ったやで.
   p.search_limit = 12500;
   p.searchMethod = MULTIMATCH_BM;
-  p.markov = NEARBY1;
+  p.remaining = MARKOV1;
 
   // オプションを指定した時にparamsを変更
   if (argc != 3) {
@@ -106,19 +106,19 @@ int main_prg(int argc, char **argv) {
         } else if (strcmp(argv[i], "MULTIMATCH_BM") == 0) {
           p.searchMethod = MULTIMATCH_BM;
         } 
-      } else if (strcmp(argv[i], "--markov") == 0) {
+      } else if (strcmp(argv[i], "--remaining") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");
-          printf("usage: ./grpwk <inputfile> <outputfile> --markov <FILL_WITH_A | NEARBY1 | NEARBY3>");
+          printf("usage: ./grpwk <inputfile> <outputfile> --markov <FILL_WITH_A | MARKOV1 | MARKOV3>");
           exit(1);
         }
         ++i;
         if (strcmp(argv[i], "FILL_WITH_A") == 0) {
-          p.markov = FILL_WITH_A;
-        } else if (strcmp(argv[i], "NEARBY1") == 0) {
-          p.markov = NEARBY1;
-        } else if (strcmp(argv[i], "NEARBY3") == 0) {
-          p.markov = NEARBY3;
+          p.remaining = FILL_WITH_A;
+        } else if (strcmp(argv[i], "MARKOV1") == 0) {
+          p.remaining = MARKOV1;
+        } else if (strcmp(argv[i], "MARKOV3") == 0) {
+          p.remaining = MARKOV3;
         }
       }
     }

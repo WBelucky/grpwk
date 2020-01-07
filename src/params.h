@@ -8,14 +8,14 @@ typedef enum {
 } SearchMethod;
 
 typedef enum {
-  NEARBY1,
-  NEARBY3,
+  MARKOV1,
+  MARKOV3,
   FILL_WITH_A,
-} Markov;
+} RemainingMethod;
 
 typedef struct  {
   int search_limit;
   SearchMethod searchMethod;  // true => KMP, false => bm_search
-  Markov markov;
+  RemainingMethod remaining;
 } Params;
 #endif // PARAMS_H

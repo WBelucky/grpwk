@@ -44,14 +44,14 @@ void solve(char *t, char **s, int n, Params* params) {
   }
 
   // 残りを適当に埋めとく
-  switch (params->markov) {
+  switch (params->remaining) {
     case FILL_WITH_A:
       fill_with_a(t, t_length);
       break;
-    case NEARBY1:
+    case MARKOV1:
       fill_by_markov_nearby1(t, t_length);
       break;
-    case NEARBY3:
+    case MARKOV3:
       // 正直遅いだけ
       super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
       break;
