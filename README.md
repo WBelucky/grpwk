@@ -19,16 +19,19 @@ cd ...../grpwk
 # 最新のmasterブランチを実行するならpullしてくる(失敗したらgit stashとかする)
 git pull origin master
 
-# Makefileをもとにコンパイル
-make
+# 精度のテストをする
+make test
 
-./grpwk <入力ファイル> <出力ファイル>
 ```
 makeがないって言われたらmakeを入れてください..
 
-### 精度のテストをする
+### 単体で実行(本番はこれ)
 ```
-make test
+# Makefileをもとにコンパイル
+make
+
+# 実行
+./grpwk <入力ファイル> <出力ファイル>
 ```
 とすると, 5つのテストデータを順にテストする.
 
