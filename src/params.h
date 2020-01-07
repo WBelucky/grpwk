@@ -14,7 +14,7 @@ typedef enum {
 } Markov;
 
 typedef struct  {
-  int bm_search_limit_length;
+  int search_limit;
   SearchMethod searchMethod;  // true => KMP, false => bm_search
   Markov markov;
 } Params;

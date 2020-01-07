@@ -4,6 +4,13 @@
 #include "bm.h"
 #include "KMP.h"
 #include "markov.h"
+
+void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length);
+void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_length);
+void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length);
+void fill_with_a(char* t, int t_length);
+void fill_by_markov_nearby1(char* t, int t_length);
+
 // qsortのための比較関数
 int str_len_cmp_r(const void * a, const void * b) {
     return (int)strlen(*(char**)b) - (int)strlen(*(char**)a);
@@ -13,6 +20,54 @@ double after[4][4] = {{0.4, 0.2, 0.2, 0.2},
                       {0.4, 0.2, 0.1, 0.3},
                       {0.3, 0.3, 0.1, 0.3},
                       {0.5, 0.4, 0, 0.1}};
+
+
+void solve(char *t, char **s, int n, Params* params) {
+  // これには0.01秒程度しかかからないので, ここのソートの高速化は後回しでいい
+  qsort(s, (size_t)n, sizeof(char *), str_len_cmp_r);
+  int t_length = (int)strlen(t);
+
+  // 大まかに埋める.
+  switch(params->searchMethod) {
+    case SIMPLE_BM:
+      fill_by_simple_bm(t, t_length, s, n, params->search_limit);
+      break;
+    case MULTIMATCH_BM:
+      fill_by_multimatch_bm(t, t_length, s, n, params->search_limit);
+      break;
+    case KMP:
+      fill_by_kmp(t, t_length, s, n, params->search_limit);
+      break;
+    default:
+      fill_by_multimatch_bm(t, t_length, s, n, params->search_limit);
+      break;
+  }
+
+  // 残りを適当に埋めとく
+  switch (params->markov) {
+    case FILL_WITH_A:
+      fill_with_a(t, t_length);
+      break;
+    case NEARBY1:
+      fill_by_markov_nearby1(t, t_length);
+      break;
+    case NEARBY3:
+      // 正直遅いだけ
+      super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
+      break;
+    default:
+      fill_by_markov_nearby1(t, t_length);
+      break;
+  }
+}
+
+void fill_with_a(char* t, int t_length) {
+  for(int i = 0; i < t_length; i++) {
+    if(t[i] == 'x') {
+      t[i] = 'a';
+    }
+  }
+}
 
 double markov(char *t, int i, int j) {
   double ret = 0;
@@ -27,18 +82,7 @@ double markov(char *t, int i, int j) {
   return ret;
 }
 
-void solve(char *t, char **s, int n, Params* params) {
-  // これには0.01秒程度しかかからないので, ここのソートの高速化は後回しでいい
-  qsort(s, (size_t)n, sizeof(char *), str_len_cmp_r);
-
-  int t_length = (int)strlen(t);
-  char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
-  strcpy(tt, t);
-
-  // s[i]をそれぞれ見ていって, tのある部分とマッチしたらそこを書き換え.
-  // ttにはどこが埋まっているかを記録するために, 文字列で埋めたところに'z'を入れる. こうすれば, すでにマッチした部分に再びマッチすることはない.
-
-  // xが残っていたら取り合えずaに置き換え
+void fill_by_markov_nearby1(char* t, int t_length) {
   for(int i = 0; i < t_length; i++) {
     if(t[i] == 'x') {
       int index = 0;
@@ -53,10 +97,26 @@ void solve(char *t, char **s, int n, Params* params) {
       t[i] = (char)('a' + index);
     }
   }
-  // super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
 }
 
 void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length) {
+  char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
+  strcpy(tt, t);
+  for (int i = 0; i < limit_length; i++) {
+    int s_length = (int)strlen(s[i]);
+    char * match = bm_search(tt, t_length, s[i], s_length);
+    if (match == NULL) {
+      continue;
+    }
+    int index = (int)(match - tt);
+    for(int j = 0; j < s_length; j++) {
+      t[j + index] = s[i][j];
+      tt[j + index] = 'z';
+    }
+  }
+}
+
+void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_length) {
   char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
   strcpy(tt, t);
   for (int i = 0; i < limit_length; i++) {
@@ -106,9 +166,6 @@ void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length)
       tt[j + index] = 'z';
     }
   }
-}
-
-void fill_by_multimatch_bm(char* t, int t_length, char **s, int n) {
 
 }
 
@@ -126,5 +183,4 @@ void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length) {
       }
     }
   }
-
 }

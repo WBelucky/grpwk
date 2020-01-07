@@ -76,37 +76,36 @@ int main_prg(int argc, char **argv) {
 
   // 解析用のパラメータを適用する
   Params p;
-  // 何も指定しない時(本番)
-  p.bm_search_limit_length = 12500;
+  // 何も指定しない時(本番) これが一番うまく行ったやで.
+  p.search_limit = 12500;
   p.searchMethod = MULTIMATCH_BM;
   p.markov = NEARBY1;
 
   // オプションを指定した時にparamsを変更
   if (argc != 3) {
     for (int i = 3; i < argc; i++) {
-      if (strcmp(argv[i], "--search_limit") == 0) {
+      if (strcmp(argv[i], "--search-limit") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");
-          printf("usage: ./grpwk <inputfile> <outputfile> --search_limit <length>");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search-limit <length>");
           exit(1);
         }
         
-        p.bm_search_limit_length = atoi(argv[++i]);
-      } else if (strcmp(argv[i], "--search_method") == 0) {
+        p.search_limit = atoi(argv[++i]);
+      } else if (strcmp(argv[i], "--search-method") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");
-          printf("usage: ./grpwk <inputfile> <outputfile> --search_method <SIMPLE_BM | KMP | MULTIMATCH_BM>");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search-method <SIMPLE_BM | KMP | MULTIMATCH_BM>");
           exit(1);
         }
         ++i;
         if (strcmp(argv[i], "KMP") == 0) {
           p.searchMethod = KMP;
-        } else if (strcmp(argv[i], "SIMPLEBM") == 0) {
+        } else if (strcmp(argv[i], "SIMPLE_BM") == 0) {
           p.searchMethod = SIMPLE_BM;
         } else if (strcmp(argv[i], "MULTIMATCH_BM") == 0) {
           p.searchMethod = MULTIMATCH_BM;
-        }
-
+        } 
       } else if (strcmp(argv[i], "--markov") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");
