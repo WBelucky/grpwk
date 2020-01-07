@@ -35,20 +35,31 @@ void solve(char *t, char **s, int n, Params* params) {
   char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
   strcpy(tt, t);
 
-  // for(int i = 0; i < params->bm_search_limit_length; i++) {
-  //   int s_len = (int)strlen(s[i]);
-  //   int index = KmpSearch(tt, t_length, s[i], s_len);
-  //   if(index != -1) {
-  //     for(int j = 0; j < s_len; j++) {
-  //       t[index + j] = s[i][j];
-  //       tt[index + j] = 'z';
-  //     }
-  //   }
-  // }
-
   // s[i]をそれぞれ見ていって, tのある部分とマッチしたらそこを書き換え.
   // ttにはどこが埋まっているかを記録するために, 文字列で埋めたところに'z'を入れる. こうすれば, すでにマッチした部分に再びマッチすることはない.
-  for (int i = 0; i < params->bm_search_limit_length; i++) {
+
+  // xが残っていたら取り合えずaに置き換え
+  for(int i = 0; i < t_length; i++) {
+    if(t[i] == 'x') {
+      int index = 0;
+      double maxp = 0;
+      for(int j = 0; j < 4; j++) {
+        double p = markov(t, i, j);
+        if(p > maxp) {
+          maxp = p;
+          index = j;
+        }
+      }
+      t[i] = (char)('a' + index);
+    }
+  }
+  // super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
+}
+
+void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length) {
+  char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
+  strcpy(tt, t);
+  for (int i = 0; i < limit_length; i++) {
     int s_length = (int)strlen(s[i]);
 
     int x_count_min = 1e9;
@@ -95,21 +106,25 @@ void solve(char *t, char **s, int n, Params* params) {
       tt[j + index] = 'z';
     }
   }
+}
 
-  // xが残っていたら取り合えずaに置き換え
-  for(int i = 0; i < t_length; i++) {
-    if(t[i] == 'x') {
-      int index = 0;
-      double maxp = 0;
-      for(int j = 0; j < 4; j++) {
-        double p = markov(t, i, j);
-        if(p > maxp) {
-          maxp = p;
-          index = j;
-        }
+void fill_by_multimatch_bm(char* t, int t_length, char **s, int n) {
+
+}
+
+void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length) {
+  char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
+  strcpy(tt, t);
+
+  for(int i = 0; i < limit_length; i++) {
+    int s_len = (int)strlen(s[i]);
+    int index = KmpSearch(tt, t_length, s[i], s_len);
+    if(index != -1) {
+      for(int j = 0; j < s_len; j++) {
+        t[index + j] = s[i][j];
+        tt[index + j] = 'z';
       }
-      t[i] = (char)('a' + index);
     }
   }
-  // super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
+
 }

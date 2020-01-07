@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <string.h>
 #include "solve.h"
 #include "params.h"
 
@@ -65,6 +66,7 @@ int main_prg(int argc, char **argv) {
     }
   }
 
+
   // 出力ファイルを作る
   FILE *fp_out = fopen(argv[2], "w");
   if (fp_out == NULL) {
@@ -75,10 +77,52 @@ int main_prg(int argc, char **argv) {
   // 解析用のパラメータを適用する
   Params p;
   // 何も指定しない時(本番)
-  if (argc == 3) {
-    p.bm_search_limit_length = 12500;
-  } else {
-    p.bm_search_limit_length = atoi(argv[3]);
+  p.bm_search_limit_length = 12500;
+  p.searchMethod = MULTIMATCH_BM;
+  p.markov = NEARBY1;
+
+  // オプションを指定した時にparamsを変更
+  if (argc != 3) {
+    for (int i = 3; i < argc; i++) {
+      if (strcmp(argv[i], "--search_limit") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search_limit <length>");
+          exit(1);
+        }
+        
+        p.bm_search_limit_length = atoi(argv[++i]);
+      } else if (strcmp(argv[i], "--search_method") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search_method <SIMPLE_BM | KMP | MULTIMATCH_BM>");
+          exit(1);
+        }
+        ++i;
+        if (strcmp(argv[i], "KMP") == 0) {
+          p.searchMethod = KMP;
+        } else if (strcmp(argv[i], "SIMPLEBM") == 0) {
+          p.searchMethod = SIMPLE_BM;
+        } else if (strcmp(argv[i], "MULTIMATCH_BM") == 0) {
+          p.searchMethod = MULTIMATCH_BM;
+        }
+
+      } else if (strcmp(argv[i], "--markov") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --markov <FILL_WITH_A | NEARBY1 | NEARBY3>");
+          exit(1);
+        }
+        ++i;
+        if (strcmp(argv[i], "FILL_WITH_A") == 0) {
+          p.markov = FILL_WITH_A;
+        } else if (strcmp(argv[i], "NEARBY1") == 0) {
+          p.markov = NEARBY1;
+        } else if (strcmp(argv[i], "NEARBY3") == 0) {
+          p.markov = NEARBY3;
+        }
+      }
+    }
   }
 
   // 解く
