@@ -95,7 +95,7 @@ int main_prg(int argc, char **argv) {
       } else if (strcmp(argv[i], "--search-method") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");
-          printf("usage: ./grpwk <inputfile> <outputfile> --search-method <SIMPLE_BM | KMP | MULTIMATCH_BM>");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search-method <SIMPLE_BM | KMP | MULTIMATCH_BM | MATCH_COUNT_SORTED>");
           exit(1);
         }
         ++i;
@@ -105,7 +105,9 @@ int main_prg(int argc, char **argv) {
           p.searchMethod = SIMPLE_BM;
         } else if (strcmp(argv[i], "MULTIMATCH_BM") == 0) {
           p.searchMethod = MULTIMATCH_BM;
-        } 
+        } else if (strcmp(argv[i], "MATCH_COUNT_SORTED") == 0) {
+          p.searchMethod = MATCH_COUNT_SORTED;
+        }
       } else if (strcmp(argv[i], "--remaining") == 0) {
         if (i + 1 >= argc) {
           printf("error:\n");

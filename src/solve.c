@@ -10,6 +10,7 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
 void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length);
 void fill_with_a(char* t, int t_length);
 void fill_by_markov_nearby1(char* t, int t_length);
+void sort_by_match_count(char * t, int t_length, char** s, int limit_length);
 
 // qsortのための比較関数
 int str_len_cmp_r(const void * a, const void * b) {
@@ -24,8 +25,9 @@ double after[4][4] = {{0.4, 0.2, 0.2, 0.2},
 
 void solve(char *t, char **s, int n, Params* params) {
   // これには0.01秒程度しかかからないので, ここのソートの高速化は後回しでいい
-  qsort(s, (size_t)n, sizeof(char *), str_len_cmp_r);
   int t_length = (int)strlen(t);
+
+  qsort(s, (size_t)n, sizeof(char *), str_len_cmp_r);
 
   // 大まかに埋める.
   switch(params->searchMethod) {
@@ -37,6 +39,9 @@ void solve(char *t, char **s, int n, Params* params) {
       break;
     case KMP:
       fill_by_kmp(t, t_length, s, n, params->search_limit);
+      break;
+    case MATCH_COUNT_SORTED:
+      sort_by_match_count(t, t_length, s, params->search_limit);
       break;
     default:
       fill_by_multimatch_bm(t, t_length, s, n, params->search_limit);
@@ -99,6 +104,127 @@ void fill_by_markov_nearby1(char* t, int t_length) {
   }
 }
 
+int * match_count;
+int compare_match_count(const void *a, const void *b) {
+    return match_count[*(int*)a] - match_count[*(int*)b];
+}
+
+// tにマッチする数でsをソートしてから当てはめていく.
+void sort_by_match_count(char * t, int t_length, char** s, int limit_length) {
+
+  // 構造体を使えばいいんだろうけど遅くなりそうで...
+  int * index = (int *)malloc(sizeof(int) * (size_t)limit_length + 5);
+  match_count = (int *)malloc(sizeof(int) * (size_t)limit_length + 5);
+  int * s_length = (int *)malloc(sizeof(int) * (size_t)limit_length + 5);
+  for (int i = 0; i < limit_length; i++) {
+    index[i] = i;
+    s_length[i] = (int)strlen(s[i]);
+  }
+
+  char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
+  strcpy(tt, t);
+
+  for (int i = 0; i < limit_length; i++) {
+    int x_count_min = 1e9;
+    char * most_match = NULL;
+    char * match = tt;
+    match_count[i] = 0;
+    while(1) {
+      int len = t_length - (int)(match - tt);
+      // 次にマッチするものを調べる 文字列の長さに注意しないとめっちゃバグる.
+      match = bm_search(match, len, s[i], s_length[i]);
+      if (match == NULL) {
+        break;
+      }
+      ++(match_count[i]);
+      // xの数が少ないほど正確性は高いはずなのでxを数えてmost_matchを更新
+      // TODO: 先にすべてのマッチの数を求めておく マッチの数が少ないものorマッチの中のxが少ないものから埋めていく
+      // TODO: bm_searchに埋め込む
+      int x_count = 0;
+      for(int j = 0; j < s_length[i]; j++) {
+        if (match[j] == 'x') {
+          x_count ++;
+        }
+      }
+      // 更新
+      if (x_count < x_count_min) {
+        x_count_min = x_count;
+        most_match = match;
+      }
+      // これ以上の一致率を持つ文字列はないのでbreak
+      if (x_count_min == 0) {
+        break;
+      }
+      // 同じところから始まってもらうと困るので...
+      match ++;
+    }
+    if (most_match == NULL) {
+      continue;
+    }
+
+    // most_matchしたもので書き換え
+    int index_match = (int)(most_match - tt);
+    for(int j = 0; j < s_length[i]; j++) {
+      // ttはどこまで埋めたかを記録するもの
+      // すでに埋めたものを'z'で埋めておけば以降はマッチしない.
+      tt[j + index_match] = 'z';
+    }
+  }
+  qsort(index, (size_t)limit_length, sizeof(int), compare_match_count);
+
+  strcpy(tt, t);
+  for (int i = 0; i < limit_length; i++) {
+    int x_count_min = 1e9;
+    char * most_match = NULL;
+    char * match = tt;
+    int count = 0;
+    while(1) {
+      int len = t_length - (int)(match - tt);
+      // 次にマッチするものを調べる 文字列の長さに注意しないとめっちゃバグる.
+      match = bm_search(match, len, s[index[i]], s_length[index[i]]);
+      if (match == NULL) {
+        break;
+      }
+      count ++;
+      // xの数が少ないほど正確性は高いはずなのでxを数えてmost_match[を更新
+      // TODO: 先にすべてのマッチの数を求めておく マッチの数が少ないものorマッチの中のxが少ないものから埋めていく
+      // TODO: bm_searchに埋め込む
+      int x_count = 0;
+      for(int j = 0; j < s_length[index[i]]; j++) {
+        if (match[j] == 'x') {
+          x_count ++;
+        }
+      }
+      // 更新
+      if (x_count < x_count_min) {
+        x_count_min = x_count;
+        most_match = match;
+      }
+      // これ以上の一致率を持つ文字列はないのでbreak
+      if (x_count_min == 0) {
+        break;
+      }
+      // 同じところから始まってもらうと困るので...
+      match ++;
+    }
+    if (most_match == NULL) {
+      continue;
+    }
+    // most_matchしたもので書き換え
+    int index_match = (int)(most_match - tt);
+    for(int j = 0; j < s_length[index[i]]; j++) {
+      // tはそのまま答えになる
+      t[j + index_match] = s[index[i]][j];
+      // ttはどこまで埋めたかを記録するもの
+      // すでに埋めたものを'z'で埋めておけば以降はマッチしない.
+      tt[j + index_match] = 'z';
+    }
+  }
+  free(tt);
+  free(index);
+  free(s_length);
+}
+
 void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length) {
   char *tt = (char *)malloc((size_t)((int)sizeof(char) * t_length + 5));
   strcpy(tt, t);
@@ -114,6 +240,7 @@ void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length)
       tt[j + index] = 'z';
     }
   }
+  free(tt);
 }
 
 void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_length) {
@@ -126,14 +253,16 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
     char * most_match = NULL;
     char * match = tt;
     while(1) {
-      int index = (int)(match - tt);
+      int len = t_length - (int)(match - tt);
       // 次にマッチするものを調べる 文字列の長さに注意しないとめっちゃバグる.
-      match = bm_search(match, t_length - index, s[i], s_length);
+      match = bm_search(match, len, s[i], s_length);
       if (match == NULL) {
         break;
       }
       // xの数が少ないほど正確性は高いはずなのでxを数えてmost_matchを更新
-      // TODO: bm_searchに埋め込む
+      // TODO?: だめだった=> 先にすべてのマッチの数を求めておく マッチの数が少ないものorマッチの中のxが少ないものから埋めていく
+      // TODO: xだけでなく前後の文字列とのマルコフ則も考慮して最もアリそうな位置を選ぶ
+      // TODO: bm_searchに処理を埋め込む
       int x_count = 0;
       for(int j = 0; j < s_length; j++) {
         if (match[j] == 'x') {
@@ -166,7 +295,7 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
       tt[j + index] = 'z';
     }
   }
-
+  free(tt);
 }
 
 void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length) {
@@ -183,4 +312,5 @@ void fill_by_kmp(char* t, int t_length, char **s, int n, int limit_length) {
       }
     }
   }
+  free(tt);
 }
