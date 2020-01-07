@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 int main_prg(int argc, char **argv) {
   if (argc < 3) {
-    printf("usage: grpwk <input file> <output file> <params>\n");
+    printf("usage: grpwk <input file> <output file> (<params...>)\n");
     exit(1);
   }
   FILE *fp_in = fopen(argv[1], "r");
@@ -76,7 +76,7 @@ int main_prg(int argc, char **argv) {
   Params p;
   // 何も指定しない時(本番)
   if (argc == 3) {
-    p.bm_search_limit_length = n;
+    p.bm_search_limit_length = 12500;
   } else {
     p.bm_search_limit_length = atoi(argv[3]);
   }

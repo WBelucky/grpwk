@@ -1,0 +1,1 @@
+void super_markov(char* t, const int t_len);

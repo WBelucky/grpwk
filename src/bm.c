@@ -8,8 +8,8 @@
 char* bm_search( char * t, int t_length, char* s, int s_length) {
 
   // ずらしはばを記録するtableを作ります.
-  int table[4];
-  for (int i = 0; i < 4; i++) {
+  int table[26];
+  for (int i = 0; i < 26; i++) {
     table[i] = -1;
   }
   for (int i = 0; i < s_length; i++) {
@@ -18,7 +18,7 @@ char* bm_search( char * t, int t_length, char* s, int s_length) {
       table[table_i] = i;
     }
   }
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 26; i++) {
     if (table[i] == -1) {
       table[i] = s_length;
     }

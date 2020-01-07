@@ -8,7 +8,7 @@ SRCDIR = ./src
 DIST = ./obj
 
 # ここにsrc以下にあるファイル名を列挙する
-SRC =  main.c solve.c bm.c
+SRC =  main.c solve.c KMP.c bm.c markov.c
 
 # 使うコンパイラ
 CC = gcc
@@ -45,3 +45,8 @@ unit_test:
 	cp Makefile ./13
 	cp README_FOR_SUBMIT.md ./13
 	tar -cvf 13.tar ./13
+markov_test:
+	g++ -o ./bin/markov_data ./tools/markov.cpp
+	cat data/dat0_ref | ./bin/markov_data 7 1 > ./src/markov.txt
+	gcc -o ./bin/markov_test src/markov.c src/markov_test.c
+	./bin/markov_test
