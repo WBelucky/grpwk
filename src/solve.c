@@ -50,13 +50,47 @@ void solve(char *t, char **s, int n, Params* params) {
   // ttにはどこが埋まっているかを記録するために, 文字列で埋めたところに'z'を入れる. こうすれば, すでにマッチした部分に再びマッチすることはない.
   for (int i = 0; i < params->bm_search_limit_length; i++) {
     int s_length = (int)strlen(s[i]);
-    char * match = bm_search(tt, t_length, s[i], s_length);
-    if (match == NULL) {
+
+    int x_count_min = 1e9;
+    char * most_match = NULL;
+    char * match = tt;
+    while(1) {
+      // 次にマッチするものを調べる
+      match = bm_search(match, t_length, s[i], s_length);
+      if (match == NULL) {
+        break;
+      }
+      // xの数が少ないほど正確性は高いはずなのでxを数えてmost_matchを更新
+      // TODO: bm_searchに埋め込む
+      int x_count = 0;
+      for(int j = 0; j < s_length; j++) {
+        if (match[j] == 'x') {
+          x_count ++;
+        }
+      }
+      // 更新
+      if (x_count < x_count_min) {
+        x_count_min = x_count;
+        most_match = match;
+      }
+      // これ以上の一致率を持つ文字列はないのでbreak
+      if (x_count_min == 0) {
+        break;
+      }
+      // 同じところから始まってもらうと困るので...
+      match ++;
+    }
+    if (most_match == NULL) {
       continue;
     }
-    int index = (int)(match - tt);
+
+    // most_matchしたもので書き換え
+    int index = (int)(most_match - tt);
     for(int j = 0; j < s_length; j++) {
+      // tはそのまま答えになる
       t[j + index] = s[i][j];
+      // ttはどこまで埋めたかを記録するもの
+      // すでに埋めたものを'z'で埋めておけば以降はマッチしない.
       tt[j + index] = 'z';
     }
   }
@@ -76,5 +110,5 @@ void solve(char *t, char **s, int n, Params* params) {
       t[i] = (char)('a' + index);
     }
   }
-  // super_markov(t, t_length);
+  //super_markov(t, t_length);
 }
