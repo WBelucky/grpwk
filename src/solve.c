@@ -55,8 +55,9 @@ void solve(char *t, char **s, int n, Params* params) {
     char * most_match = NULL;
     char * match = tt;
     while(1) {
-      // 次にマッチするものを調べる
-      match = bm_search(match, t_length, s[i], s_length);
+      int index = (int)(match - tt);
+      // 次にマッチするものを調べる 文字列の長さに注意しないとめっちゃバグる.
+      match = bm_search(match, t_length - index, s[i], s_length);
       if (match == NULL) {
         break;
       }
@@ -110,5 +111,5 @@ void solve(char *t, char **s, int n, Params* params) {
       t[i] = (char)('a' + index);
     }
   }
-  //super_markov(t, t_length);
+  // super_markov(t, t_length); // 前後3文字を見てやるマルコフ.
 }

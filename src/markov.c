@@ -32,45 +32,30 @@ void super_markov(char* t, const int t_len) {
     for (int i = 0; i < len; i++) {
         p *= 5;
     }
-    char** pattern = (char**)malloc(sizeof(char*) * p);
+    char** pattern = (char**)malloc(sizeof(char*) * p + 5);
     for (int i = 0; i < p; i++) {
         pattern[i] = (char*)malloc(sizeof(char) * len + 1);
         pattern[i][0] = '\0';
     }
     
     for (int i = 0; i < num_of_pattern; i++) {
-        char key[1000];
+        char key[100];
         fscanf(fp, "%s", key);
         int index = to_radix5_index(key, len);
         fscanf(fp, "%s", pattern[index]);
         // printf("%d: %s\n", index, pattern[index]);
     }
     fclose(fp);
-    // for (int i = 0; i < t_len - len; i++) {
-    //     int index = to_radix5_index(t + i, len);
-    //     if (strcmp(pattern[index], "\0") == 0) {
-    //         int j = len / 2;
-    //         if (t[i + j] == 'x') {
-    //             t[i + j] = 'a';
-    //         }
-    //     } else {
-    //         int j = len / 2;
-    //         t[i + j] = pattern[index][j];
-    //     }
-    // }
-    for (int i = 0; i < t_len / len; i++) {
-        int index = to_radix5_index(t + (i * len), len);
+    for (int i = 0; i < t_len - len; i++) {
+        int index = to_radix5_index(t + i, len);
         if (strcmp(pattern[index], "\0") == 0) {
-            for (int j = 0; j < len; j++) {
-                if (t[i * len + j] == 'x') {
-                    t[i * len + j] = 'a';
-                }
+            int j = len / 2;
+            if (t[i + j] == 'x') {
+                t[i + j] = 'a';
             }
         } else {
-            for (int j = 0; j < len; j++) {
-                t[i * len + j] = pattern[index][j];
-            }
+            int j = len / 2;
+            t[i + j] = pattern[index][j];
         }
-
     }
 }
