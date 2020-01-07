@@ -34,7 +34,7 @@ make test
 
 ### 方法を変えて検証する(ポスターを書く時とかに活かしてほしい)
 ```
-make test ARG="--search-limit 9000 --search-method SIMPLE_BM --markov NEARBY3"
+make test ARG="--search-limit 9000 --search-method SIMPLE_BM --remaining FILL_WITH_A"
 ```
 などとして引数をあたえることで, 探索方法などを変えて実行できる. 現在は
 --search-limit, --search-method, --markov の3つのオプションがある.
@@ -44,10 +44,23 @@ make test ARG="--search-limit 9000 --search-method SIMPLE_BM --markov NEARBY3"
     よって, 文字列郡sを降順ソートしてある個数になるまでtに当てはめていくが, "--search-limit value" で指定された値valueになるとパターンマッチをやめて, 残りのxを適当に埋めるパートに入る.
     デフォルト値は12500
 * --search-method
-    上記の方法でバラバラ文字列郡sを使って虫食い文字列tを埋めていく時に使用する探索方法.
-    3つの方法 SIMPLE_BM, KMP, MULTIMATCH_BM が現在実装されている.
-    * 
-
+    上記の方法でバラバラ文字列郡sを使って虫食い文字列tを埋めていく時に使用する探索方法. "--search-method method-name"としたときのmethod-nameによって処理を分岐する.
+    method-nameに入りうるは次の3つ. SIMPLE_BM, KMP, MULTIMATCH_BMである.
+    * SIMPLE_BM
+    単純なbm(boyer-moore search)法を実行する, sそれぞれに対して前から探索していって, tのはじめにマッチした部分に挿入する.
+    * KMP
+    単純なKMP法を実行する, Shinさんが作ってくれた.
+    * MULTIMATCH_BM
+    デフォルト. bm法を実行するが, あるsをtのはじめにマッチした部分に挿入するのではなく, sがマッチしうるtのすべての箇所を比較し, その中で不確定文字xが一番少ないところにマッチする.
+* --remaining
+    今まで述べた方法でsをtに当てはめていくが, どうしても確定できない部分が存在する. その部分を適当な方法で埋める.
+    現在3つの方法 FILL_WITH_A, MARKOV1, MARKOV3がある.
+    * FILL_WITH_A
+    xを全部aで埋める
+    * MARKOV1
+    前後1文字を考慮したマルコフ則を考慮. これがデフォルト
+    * MARKOV3
+    前後3文字(tools/markov.cppをいじればソレ以上も可)を考慮したマルコフ則で埋める. あんま精度上がらない
 ### ユニットテストをする 
 bm_searchなど, 自分が制作したライブラリが間違っていないかテストする
 ```
