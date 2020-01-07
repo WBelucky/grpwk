@@ -19,7 +19,7 @@ int to_radix5_index(char * s, int s_len) {
 }
 
 void super_markov(char* t, const int t_len) {
-    char filename[] = "./src/markov.txt";
+    char filename[] = "./src/markov_data";
     FILE * fp = fopen(filename, "r");
     if (fp == NULL) {
         printf("cannot open %s", filename);

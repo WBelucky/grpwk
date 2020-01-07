@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <string.h>
 #include "solve.h"
 #include "params.h"
 
@@ -65,6 +66,7 @@ int main_prg(int argc, char **argv) {
     }
   }
 
+
   // 出力ファイルを作る
   FILE *fp_out = fopen(argv[2], "w");
   if (fp_out == NULL) {
@@ -74,11 +76,52 @@ int main_prg(int argc, char **argv) {
 
   // 解析用のパラメータを適用する
   Params p;
-  // 何も指定しない時(本番)
-  if (argc == 3) {
-    p.bm_search_limit_length = 12500;
-  } else {
-    p.bm_search_limit_length = atoi(argv[3]);
+  // 何も指定しない時(本番) これが一番うまく行ったやで.
+  p.search_limit = 12500;
+  p.searchMethod = MULTIMATCH_BM;
+  p.remaining = MARKOV1;
+
+  // オプションを指定した時にparamsを変更
+  if (argc != 3) {
+    for (int i = 3; i < argc; i++) {
+      if (strcmp(argv[i], "--search-limit") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search-limit <length>");
+          exit(1);
+        }
+        
+        p.search_limit = atoi(argv[++i]);
+      } else if (strcmp(argv[i], "--search-method") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --search-method <SIMPLE_BM | KMP | MULTIMATCH_BM>");
+          exit(1);
+        }
+        ++i;
+        if (strcmp(argv[i], "KMP") == 0) {
+          p.searchMethod = KMP;
+        } else if (strcmp(argv[i], "SIMPLE_BM") == 0) {
+          p.searchMethod = SIMPLE_BM;
+        } else if (strcmp(argv[i], "MULTIMATCH_BM") == 0) {
+          p.searchMethod = MULTIMATCH_BM;
+        } 
+      } else if (strcmp(argv[i], "--remaining") == 0) {
+        if (i + 1 >= argc) {
+          printf("error:\n");
+          printf("usage: ./grpwk <inputfile> <outputfile> --markov <FILL_WITH_A | MARKOV1 | MARKOV3>");
+          exit(1);
+        }
+        ++i;
+        if (strcmp(argv[i], "FILL_WITH_A") == 0) {
+          p.remaining = FILL_WITH_A;
+        } else if (strcmp(argv[i], "MARKOV1") == 0) {
+          p.remaining = MARKOV1;
+        } else if (strcmp(argv[i], "MARKOV3") == 0) {
+          p.remaining = MARKOV3;
+        }
+      }
+    }
   }
 
   // 解く
