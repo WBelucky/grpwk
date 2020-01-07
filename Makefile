@@ -1,3 +1,4 @@
+ARG = 
 # 出力する実行ファイル名
 PROG = grpwk
 
@@ -31,7 +32,7 @@ test:	$(PROG)
 	mkdir -p ./bin
 	gcc -o ./bin/perform_test tools/perform_test.c
 	for i in 0 1 2 3 4; do\
-	    ./$(PROG) "data/dat$${i}_in" out.txt;\
+	    ./$(PROG) "data/dat$${i}_in" out.txt $(ARG);\
 	    ./bin/perform_test "data/dat$${i}_in" out.txt "data/dat$${i}_ref";\
 	done
 
