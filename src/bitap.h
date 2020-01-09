@@ -1,0 +1,1 @@
+int bitmap_search(char * t, int t_length, char * p, int p_length);

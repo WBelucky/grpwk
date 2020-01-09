@@ -4,6 +4,7 @@
 #include "bm.h"
 #include "KMP.h"
 #include "markov.h"
+#include "bitap.h"
 
 void fill_by_simple_bm(char* t, int t_length, char **s, int n, int limit_length);
 void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_length);
@@ -316,10 +317,20 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
     while(1) {
       int len = t_length - (int)(match - tt);
       // 次にマッチするものを調べる 文字列の長さに注意しないとめっちゃバグる.
-      match = bm_search(match, len, s[i], s_length);
-      if (match == NULL) {
-        break;
+
+      if (s_length < 64) {
+        int bitap_index = bitmap_search(match, len, s[i], s_length);
+        if (bitap_index == -1) {
+          break;
+        }
+        match = (char*)(match + bitap_index);
+      } else {
+        match = bm_search(match, len, s[i], s_length);
+        if (match == NULL) {
+          break;
+        }
       }
+
       // xの数が少ないほど正確性は高いはずなのでxを数えてmost_matchを更新
       // TODO?: だめだった=> 先にすべてのマッチの数を求めておく マッチの数が少ないものorマッチの中のxが少ないものから埋めていく
       // TODO: xだけでなく前後の文字列とのマルコフ則も考慮して最もアリそうな位置を選ぶ
