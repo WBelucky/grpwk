@@ -17,10 +17,63 @@ int str_len_cmp_r(const void * a, const void * b) {
     return (int)strlen(*(char**)b) - (int)strlen(*(char**)a);
 }
 
-double after[4][4] = {{0.4, 0.2, 0.2, 0.2},
-                      {0.4, 0.2, 0.1, 0.3},
-                      {0.3, 0.3, 0.1, 0.3},
-                      {0.5, 0.4, 0, 0.1}};
+// マルコフ則に使う. 確率はアバウト.
+// after[i][j] で一つ前に 文字 "'a' + i" があるとき, 次に "'a' + j" が現れる確率
+//               一つ後 a   b    c    d
+double after[4][4] = {{0.4, 0.2, 0.2, 0.2}, // 一つ前がa
+                      {0.4, 0.2, 0.1, 0.3}, // b
+                      {0.3, 0.3, 0.1, 0.3}, // c
+                      {0.5, 0.4, 0, 0.1}};  // d
+
+
+// before[j][i] で 文字 "'a' + i" があるとき, その前に "'a' + j" が現れる確率
+double before[4][4] = {
+  // 一つ後がaのとき
+  { 
+    0.401769, // a
+    0.24885, // b
+    0.0874049, // c
+    0.261977, // d
+  },
+  // 一つ後がb
+  { 0.319099, // a
+    0.199251, // b
+    0.140945, // c
+    0.340705, // d
+  },
+  // 一つ後がc
+  {
+    0.688417, // a
+    0.211503, // b
+    0.10008, // c
+    0, // d
+  },
+  // 一つ後がd
+  {
+    0.380197, // a
+    0.35621, // b
+    0.16468, // c
+    0.0989126, // d
+  },
+};
+// 後前
+// aa 0.401769
+// ab 0.24885
+// ac 0.0874049
+// ad 0.261977
+// ba 0.319099
+// bb 0.199251
+// bc 0.140945
+// bd 0.340705
+// ca 0.688417
+// cb 0.211503
+// cc 0.10008
+// cd 0
+// da 0.380197
+// db 0.35621
+// dc 0.16468
+// dd 0.0989126
+
 
 
 void solve(char *t, char **s, int n, Params* params) {
@@ -74,15 +127,23 @@ void fill_with_a(char* t, int t_length) {
   }
 }
 
-double markov(char *t, int i, int j) {
-  double ret = 0;
+
+double prob[4] = {0.40, 0.25, 0.11, 0.21};
+
+double markov(char *t, int t_length, int i, int j) {
+  double ret = 1;
   if(i) {
+    // i-1はもう埋まってると仮定する
     int a = (int)t[i - 1] - 'a';
-    ret += after[a][j];
+    ret *= after[a][j];
   }
-  if(t[i + 1]) {
-    int a = (int)t[i + 1] - 'a';
-    ret += after[j][a];
+  if(i < t_length - 1) {
+    if (t[i + 1] == 'x') {
+      ret *= prob[j];
+    } else {
+      int a = (int)t[i + 1] - 'a';
+      ret *= after[j][a];
+    }
   }
   return ret;
 }
@@ -93,7 +154,7 @@ void fill_by_markov_nearby1(char* t, int t_length) {
       int index = 0;
       double maxp = 0;
       for(int j = 0; j < 4; j++) {
-        double p = markov(t, i, j);
+        double p = markov(t, t_length, i, j);
         if(p > maxp) {
           maxp = p;
           index = j;
