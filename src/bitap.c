@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 void make_bitmask(char * p, int p_length, long long * p_mask, int mask_size) {
     for (int i = 0; i < mask_size; ++i) {
         p_mask[i] = ~0; // fill all with 1
@@ -12,6 +13,30 @@ void make_bitmask(char * p, int p_length, long long * p_mask, int mask_size) {
 
 char* bitmap_search(char * t, int t_length, long long * p_mask, int p_length) {
     long long A = ~1;
+    for (int i = 0; i < t_length; ++i) {
+        A |= p_mask[(int)(t[i])];
+        A <<=1;
+        // Aはほとんど1だったけど, ゴニョゴニョした結果, 積が0になればOk
+        if (!(A & (1LL << p_length))) {
+            return t + (i - p_length + 1);
+        }
+    }
+    return NULL;
+}
+
+void make_bitmask128(char * p, int p_length, __int128_t * p_mask, int mask_size) {
+    for (int i = 0; i < mask_size; ++i) {
+        p_mask[i] = ~0; // fill all with 1
+    }
+    for (int i = 0; i < p_length; ++i) {
+        // 文字p[i]が来たときのマスクを作る
+        p_mask[(int)(p[i])] &= ~(1LL << i);
+    }
+    p_mask[(int)('x')] = 0;
+}
+
+char* bitmap_search128(char * t, int t_length, __int128_t * p_mask, int p_length) {
+    __int128_t A = ~1;
     for (int i = 0; i < t_length; ++i) {
         A |= p_mask[t[i]];
         A <<=1;

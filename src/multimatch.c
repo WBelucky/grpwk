@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "bm.h"
 #include "bitap.h"
 
@@ -18,9 +19,7 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
       while((match = bitmap_search(match, t_length - (int)(match - tt), s_mask, s_length))) {
         int x_count = 0;
         for(int j = 0; j < s_length; j++) {
-          if(match[j] == 'x') {
-            x_count++;
-          }
+          x_count += (match[j] == 'x');
         }
         // 更新
         if(x_count < x_count_min) {
@@ -28,24 +27,21 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
           most_match = match;
         }
         // これ以上の一致率を持つ文字列はないのでbreak
-        if(x_count_min == 0) {
+        if(!x_count_min) {
           break;
         }
         // 同じところから始まってもらうと困るので...
-        match++;
+        ++match;
       }
     } else {
-      while(1) {
-        int len = t_length - (int)(match - tt);
-        match = bm_search(match, len, s[i], s_length);
-        if(match == NULL) {
-          break;
-        }
+
+      int table[26];
+      make_bm_table(s[i], s_length, table, 26);
+      
+      while((match = bm_search_with_table(match, t_length - (int)(match - tt), s[i], s_length, table))) {
         int x_count = 0;
         for(int j = 0; j < s_length; j++) {
-          if(match[j] == 'x') {
-            x_count++;
-          }
+          x_count += (match[j] == 'x');
         }
         // 更新
         if(x_count < x_count_min) {
@@ -53,19 +49,19 @@ void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_len
           most_match = match;
         }
         // これ以上の一致率を持つ文字列はないのでbreak
-        if(x_count_min == 0) {
+        if(!x_count_min) {
           break;
         }
         // 同じところから始まってもらうと困るので...
-        match++;
+        ++match;
       }
     }
-    if (most_match == NULL) {
+    if (!most_match) {
       continue;
     }
     // most_matchしたもので書き換え
     int index = (int)(most_match - tt);
-    for(int j = 0; j < s_length; j++) {
+    for(int j = 0; j < s_length; ++j) {
       // tはそのまま答えになる
       t[j + index] = s[i][j];
       // ttはどこまで埋めたかを記録するもの
