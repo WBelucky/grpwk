@@ -9,7 +9,7 @@ SRCDIR = ./src
 DIST = ./obj
 
 # ここにsrc以下にあるファイル名を列挙する
-SRC =  main.c solve.c KMP.c bm.c markov.c
+SRC =  main.c solve.c KMP.c bm.c markov.c bitap.c multimatch.c
 
 # 使うコンパイラ
 CC = gcc

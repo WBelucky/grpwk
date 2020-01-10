@@ -64,5 +64,6 @@ int main(int argc, char* argv[]) {
         }
     }
     printf("accuracy: %lf%%(output) <= %lf%%(input) \n", (double)out_count / out_len * 100, (double)in_count / out_len * 100);
+    printf("distance: %d\n", out_len - out_count);
     return 0;
 }

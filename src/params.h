@@ -5,6 +5,7 @@ typedef enum {
   SIMPLE_BM,
   MULTIMATCH_BM,
   KMP,
+  MATCH_COUNT_SORTED,
 } SearchMethod;
 
 typedef enum {
