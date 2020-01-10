@@ -1,0 +1,1 @@
+void fill_by_multimatch_bm(char* t, int t_length, char **s, int n, int limit_length);
