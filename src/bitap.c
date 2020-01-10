@@ -38,7 +38,7 @@ void make_bitmask128(char * p, int p_length, __int128_t * p_mask, int mask_size)
 char* bitmap_search128(char * t, int t_length, __int128_t * p_mask, int p_length) {
     __int128_t A = ~1;
     for (int i = 0; i < t_length; ++i) {
-        A |= p_mask[t[i]];
+        A |= p_mask[(int)(t[i])];
         A <<=1;
         // Aはほとんど1だったけど, ゴニョゴニョした結果, 
         if ((A & (1LL << p_length)) == 0) {
@@ -59,11 +59,11 @@ int make_bitmask_and_bitmap_search(char * t, int t_length, char * p, int p_lengt
     }
     for (int i = 0; i < p_length; ++i) {
         // 文字p[i]が来たときのマスクを作る
-        p_mask[p[i]] &= ~(1LL << i);
+        p_mask[(int)(p[i])] &= ~(1LL << i);
     }
     p_mask[(int)('x')] = 0;
     for (int i = 0; i < t_length; ++i) {
-        A |= p_mask[t[i]];
+        A |= p_mask[(int)(t[i])];
         A <<=1;
         // Aはほとんど1だったけど, ゴニョゴニョした結果, 
         if ((A & (1LL << p_length)) == 0) {
